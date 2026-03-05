@@ -18,7 +18,7 @@ const SECTIONS = [
   },
   {
     title: "Logo",
-    href: "#",
+    href: "/logo",
     description:
       "Download our official logos, understand the different variations, placements and rules for use.",
   },

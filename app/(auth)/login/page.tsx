@@ -47,7 +47,7 @@ export default function LoginPage() {
 
     // Check if the user has completed setup
     const session = await getSession();
-    router.push(session?.user?.isSetupComplete ? "/" : "/setup");
+    router.push(session?.user?.isSetupComplete ? "/dashboard" : "/setup");
     router.refresh();
   };
 

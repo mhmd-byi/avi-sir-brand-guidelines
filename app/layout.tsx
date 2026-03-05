@@ -21,11 +21,16 @@ export const metadata: Metadata = {
   description: "Brand identity guidelines and design assets.",
 };
 
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+  
   // Fetch brand colors once, server-side, for the entire app
   let primaryColor = "#1d6497";
   let secondaryColor = "#f59e0b";
@@ -57,13 +62,22 @@ export default async function RootLayout({
 
         {/* ── Persistent site header ──────────────────────── */}
         <header style={{ backgroundColor: primaryColor }}>
-          <div className="max-w-6xl mx-auto px-8 md:px-16 py-4 flex items-center">
+          <div className="max-w-6xl mx-auto px-8 md:px-16 py-4 flex items-center justify-between">
             <Link
               href="/"
               className="text-white font-semibold text-lg tracking-tight hover:opacity-80 transition-opacity"
             >
               Brand Guidelines
             </Link>
+
+            {session && (
+              <Link
+                href="/dashboard"
+                className="text-white/90 text-sm font-medium hover:text-white transition-colors border border-white/20 px-3 py-1 rounded-md bg-white/10"
+              >
+                Dashboard
+              </Link>
+            )}
           </div>
         </header>
 
