@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import BrandSettings from "@/models/BrandSettings";
-import { put } from "@vercel/blob";
+import { put, del } from "@vercel/blob";
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,14 +41,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Upload to Vercel Blob instead of local disk
-    // We specify 'public' access as the user requested for guidelines
+    await connectDB();
+    
+    // Check for previous logo to delete it
+    const existingSettings = await BrandSettings.findOne({});
+    if (existingSettings && (existingSettings as any)[logoType]) {
+      try {
+        const oldUrl = (existingSettings as any)[logoType];
+        // Only attempt delete if it's a blob URL
+        if (oldUrl.includes("blob.vercel-storage.com")) {
+          await del(oldUrl);
+        }
+      } catch (delError) {
+        console.error("[LOGO DELETE ERROR] Failed to delete old blob:", delError);
+        // We continue anyway so the new upload isn't blocked by a failed delete
+      }
+    }
+
+    // Upload to Vercel Blob
     const filename = `${logoType}-${Date.now()}-${file.name}`;
     const blob = await put(filename, file, {
       access: 'public',
     });
-
-    await connectDB();
 
     // Update the corresponding field in the singleton BrandSettings doc with the Blob URL
     await BrandSettings.findOneAndUpdate(
