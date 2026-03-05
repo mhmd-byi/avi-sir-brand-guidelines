@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import BrandSettings from "@/models/BrandSettings";
-import fs from "fs/promises";
-import path from "path";
+import { put } from "@vercel/blob";
 
 export async function POST(req: NextRequest) {
   try {
@@ -42,37 +41,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Folder structure: public/assets/logos/{stacked|landscape}/
-    const subFolder = logoType.startsWith("stacked") ? "stacked" : "landscape";
-    const uploadDir = path.join(process.cwd(), "public", "assets", "logos", subFolder);
-
-    // Create dir if not exists
-    await fs.mkdir(uploadDir, { recursive: true });
-
-    // Sanitize filename or give it a standard name
-    // e.g., stackedLogo_fullcolor.png
-    const ext = path.extname(file.name) || ".png";
-    const fileName = `${logoType}${ext}`;
-    const filePath = path.join(uploadDir, fileName);
-
-    // Write file to disk
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await fs.writeFile(filePath, buffer);
-
-    // The public path stored in DB
-    const publicPath = `/assets/logos/${subFolder}/${fileName}`;
+    // Upload to Vercel Blob instead of local disk
+    // We specify 'public' access as the user requested for guidelines
+    const filename = `${logoType}-${Date.now()}-${file.name}`;
+    const blob = await put(filename, file, {
+      access: 'public',
+    });
 
     await connectDB();
 
-    // Update the corresponding field in the singleton BrandSettings doc
+    // Update the corresponding field in the singleton BrandSettings doc with the Blob URL
     await BrandSettings.findOneAndUpdate(
       {},
-      { [logoType]: publicPath },
+      { [logoType]: blob.url },
       { upsert: true, new: true }
     );
 
     return NextResponse.json(
-      { message: "Logo uploaded successfully.", publicPath },
+      { message: "Logo uploaded successfully.", publicPath: blob.url },
       { status: 200 }
     );
   } catch (error) {
