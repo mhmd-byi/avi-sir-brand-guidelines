@@ -12,7 +12,7 @@ interface BrandColors {
 const SECTIONS = [
   {
     title: "About us",
-    href: "#",
+    href: "/about",
     description:
       "An introduction to our brand identity and how we represent ourselves consistently across every touchpoint.",
   },
@@ -93,7 +93,7 @@ export default function HomePage() {
       {/* Hero banner */}
       <div style={{ backgroundColor: heroBg }}>
         <div className="max-w-6xl mx-auto px-8 md:px-16 py-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold mb-4" style={{ color: colors.primaryColor }}>
             Brand guidelines
           </h1>
           <p className="text-base text-gray-600 leading-relaxed max-w-2xl">

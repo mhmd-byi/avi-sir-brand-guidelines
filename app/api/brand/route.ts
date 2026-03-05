@@ -12,14 +12,14 @@ export async function GET() {
     }>();
 
     return NextResponse.json({
-      primaryColor:   settings?.primaryColor   ?? "#6366f1",
+      primaryColor:   settings?.primaryColor   ?? "#1d6497",
       secondaryColor: settings?.secondaryColor ?? "#f59e0b",
       configured: !!settings,
     });
   } catch (error) {
     console.error("[BRAND ERROR]", error);
     return NextResponse.json(
-      { primaryColor: "#6366f1", secondaryColor: "#f59e0b", configured: false },
+      { primaryColor: "#1d6497", secondaryColor: "#f59e0b", configured: false },
     );
   }
 }
