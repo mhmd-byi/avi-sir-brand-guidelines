@@ -24,7 +24,7 @@ const MODULES = [
     title: "Colours",
     description: "Manage your brand's primary and secondary colour palettes.",
     icon: Palette,
-    href: "/setup",
+    href: "/dashboard/colours",
     status: "Active"
   },
   {

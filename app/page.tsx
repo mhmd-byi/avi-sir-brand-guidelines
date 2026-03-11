@@ -30,7 +30,7 @@ const SECTIONS = [
   },
   {
     title: "Colours",
-    href: "#",
+    href: "/colours",
     description:
       "Our brand colour palettes, swatch libraries and guidance on accessible colour use.",
   },
